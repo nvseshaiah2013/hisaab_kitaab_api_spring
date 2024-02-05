@@ -1,0 +1,1 @@
+FROM amazoncorretto:17.0.10-al2023
