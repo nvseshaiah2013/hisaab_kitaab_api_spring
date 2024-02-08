@@ -24,6 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
+/**
+ * Configuration to fetch the Mongo Connection url from vault
+ *
+ */
 @Configuration
 @Slf4j
 @AutoConfigureBefore({MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
