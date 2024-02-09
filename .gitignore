@@ -170,6 +170,9 @@ build/
 ### VS Code ###
 .vscode/
 
+### secret files ###
+.oci/
+
 ### Some additional ignores (sort later)
 *.DS_Store
 *.sw?
