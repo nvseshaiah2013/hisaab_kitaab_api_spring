@@ -1,3 +1,11 @@
 spring:
   profiles:
     active: prod
+allowedMethods:
+  - GET
+  - OPTIONS
+  - POST
+  - PUT
+  - DELETE
+allowedOrigins:
+  - https://hisabkitab.rahulojha.in
