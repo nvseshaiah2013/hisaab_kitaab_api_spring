@@ -1,4 +1,3 @@
-/target/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
@@ -20,7 +19,6 @@ tmp/
 *.swp
 *~.nib
 local.properties
-.settings/
 .loadpath
 .recommenders
 
@@ -170,15 +168,15 @@ build/
 ### VS Code ###
 .vscode/
 
+### secret files ###
+.oci/
+
 ### Some additional ignores (sort later)
 *.DS_Store
 *.sw?
 .#*
 *#
 *~
-bin
-build
-target
 *.sublime-*
 /scratch
 .gradle

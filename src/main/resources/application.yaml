@@ -1,2 +1,5 @@
 server:
   port: 3080
+config:
+  credentialConfigFilePath: .oci/secrets-config
+  customConfigFilePath: .oci/custom-config
