@@ -1,5 +1,8 @@
 server:
   port: 3080
+spring:
+  application:
+    name: ledger
 config:
   credentialConfigFilePath: .oci/secrets-config
   customConfigFilePath: .oci/custom-config

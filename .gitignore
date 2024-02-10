@@ -171,6 +171,9 @@ build/
 ### secret files ###
 .oci/
 
+### log files ###
+logs/
+
 ### Some additional ignores (sort later)
 *.DS_Store
 *.sw?
