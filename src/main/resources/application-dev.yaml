@@ -1,11 +1,1 @@
-spring:
-  profiles:
-    active: dev
-allowedMethods:
-  - GET
-  - OPTIONS
-  - POST
-  - PUT
-  - DELETE
-allowedOrigins:
-  - https://hisabkitab.rahulojha.in
+allowedOrigins: http://localhost:3000

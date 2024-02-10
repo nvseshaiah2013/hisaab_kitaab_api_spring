@@ -28,9 +28,6 @@ public class SecurityConfig {
     @Value("${allowedOrigins}")
     private List<String> allowedOrigins;
 
-    @Value("${allowedMethods}")
-    private List<String> allowedMethods;
-
     @Autowired
     private JwtFilter jwtFilter;
 

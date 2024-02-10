@@ -3,3 +3,6 @@ server:
 config:
   credentialConfigFilePath: .oci/secrets-config
   customConfigFilePath: .oci/custom-config
+spring:
+  profiles:
+    active: dev

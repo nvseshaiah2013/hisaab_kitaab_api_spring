@@ -19,6 +19,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.AUTHORIZATION_ERROR;
+import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.AUTHORIZATION_HEADER;
+import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.BEARER_PREFIX;
+
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -30,36 +34,31 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         String username = null;
         String jwt = null;
 
         try {
-
-
-            if(authHeader!=null && authHeader.startsWith("Bearer "))
-            {
+            if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
                 jwt = authHeader.substring(7);
                 username = jwtService.extractUsername(jwt);
             }
 
-            if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null )
-            {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userService.loadUserByUsername(username);
-                if(jwtService.validateToken(jwt, userDetails))
-                {
+                if (jwtService.validateToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                            = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                            = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
             }
 
-        }
-        catch(JwtException e) {
+        } catch (JwtException e) {
+            logger.error("Exception occurred while verifying JWT : {}", e);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().print(new ErrorMessage("Authorization Error", e.getMessage()));
+            response.getWriter().print(new ErrorMessage(AUTHORIZATION_ERROR, e.getMessage()));
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
