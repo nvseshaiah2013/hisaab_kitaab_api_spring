@@ -3,9 +3,8 @@ server:
 spring:
   application:
     name: ledger
+  profiles:
+    active: dev
 config:
   credentialConfigFilePath: .oci/secrets-config
   customConfigFilePath: .oci/custom-config
-spring:
-  profiles:
-    active: dev

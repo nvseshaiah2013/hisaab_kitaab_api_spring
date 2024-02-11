@@ -1,5 +1,6 @@
 package com.kitaab.hisaab.ledger.config;
 
+import com.kitaab.hisaab.ledger.constants.ApplicationConstants;
 import com.kitaab.hisaab.ledger.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,9 +19,6 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
-import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.ALLOW_USERS_ENDPOINT;
-import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.CHANGE_PASSWORD_ENDPOINT;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -35,11 +33,13 @@ public class SecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception{
         return http
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(ALLOW_USERS_ENDPOINT)
+                        .requestMatchers(ApplicationConstants.ALLOW_USERS_ENDPOINT)
                         .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS)
                         .permitAll()
-                        .requestMatchers(CHANGE_PASSWORD_ENDPOINT)
+                        .requestMatchers(ApplicationConstants.ACTUATOR_ENDPOINT)
+                        .permitAll()
+                        .requestMatchers(ApplicationConstants.CHANGE_PASSWORD_ENDPOINT)
                         .authenticated()
                         .anyRequest()
                         .authenticated()
