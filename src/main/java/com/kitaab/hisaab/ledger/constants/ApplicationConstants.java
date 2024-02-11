@@ -26,4 +26,26 @@ public class ApplicationConstants {
     public static final String BEARER_PREFIX = "Bearer ";
 
     public static final String ACTUATOR_ENDPOINT = "/actuator/**";
+    public static final String BEARER_KEY = "bearer-key";
+    public static final String BEARER_JWT = "bearer-jwt";
+    public static final String LICENCE_NAME = "MIT License";
+    public static final String LICENCE_URL = "https://opensource.org/licenses/mit-license.php";
+    public static final String CONTACT_NAME = "Ledger";
+    public static final String CONTACT_EMAIL = "help@ledger.com";
+    public static final String CONTACT_URL= "https://hisabkitab.rahulojha.in";
+    public static final String SECURITY_BEARER_FORMAT= "JWT";
+    public static final String SECURITY_SCHEME= "bearer";
+    public static final String API_TITLE= "Ledger Service";
+    public static final String API_DESCRIPTION= "Documentation of API v.1.0";
+    public static final String API_VERSION = "1.0";
+    public static final String SERVER_URL = "/ledger/";
+    public static final String SERVER_DESCRIPTION = "Your Expense Buddy";
+
+
+
+
+
+
+
+
 }

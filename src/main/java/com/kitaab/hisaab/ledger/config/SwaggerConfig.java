@@ -1,6 +1,7 @@
 package com.kitaab.hisaab.ledger.config;
 
 
+import com.kitaab.hisaab.ledger.constants.ApplicationConstants;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -21,38 +22,38 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenApi() {
         ArrayList<Server> servers = new ArrayList<>();
-        servers.add(new Server().url("/ledger/").description("Your Expense Buddy"));
+        servers.add(new Server().url(ApplicationConstants.SERVER_URL).description(ApplicationConstants.SERVER_DESCRIPTION));
         return new OpenAPI()
-                .components(new Components().addSecuritySchemes("bearer-key",
+                .components(new Components().addSecuritySchemes(ApplicationConstants.BEARER_KEY,
                         new SecurityScheme().type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer").bearerFormat("JWT")))
+                                .scheme(ApplicationConstants.SECURITY_SCHEME).bearerFormat(ApplicationConstants.SECURITY_BEARER_FORMAT)))
                 .servers(servers)
                 .info(getApiInfo())
                 .addSecurityItem(new SecurityRequirement()
-                        .addList("bearer-jwt", Arrays.asList("read", "write"))
-                        .addList("bearer-key", Collections.emptyList()));
+                        .addList(ApplicationConstants.BEARER_JWT, Arrays.asList("read", "write"))
+                        .addList(ApplicationConstants.BEARER_KEY, Collections.emptyList()));
 
     }
 
     private Info getApiInfo() {
         return new Info()
-                .title("Ledger Service")
-                .description("Documentation of API v.1.0")
-                .version("1.0")
+                .title(ApplicationConstants.API_TITLE)
+                .description(ApplicationConstants.API_DESCRIPTION)
+                .version(ApplicationConstants.API_VERSION)
                 .license(license())
                 .contact(contact());
     }
 
     private License license() {
         return new License()
-                .name("MIT License")
-                .url("https://opensource.org/licenses/mit-license.php");
+                .name(ApplicationConstants.LICENCE_NAME)
+                .url(ApplicationConstants.LICENCE_URL);
     }
 
     private Contact contact() {
         return new Contact()
-                .name("Ledger")
-                .url("https://hisabkitab.rahulojha.in")
-                .email("help@ledger.com");
+                .name(ApplicationConstants.CONTACT_NAME)
+                .url(ApplicationConstants.CONTACT_URL)
+                .email(ApplicationConstants.CONTACT_EMAIL);
     }
 }
