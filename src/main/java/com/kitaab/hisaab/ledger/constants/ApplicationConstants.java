@@ -18,13 +18,9 @@ public class ApplicationConstants {
     };
 
     public static final String CHANGE_PASSWORD_ENDPOINT = "/api/users/changePassword";
-
     public static final String AUTHORIZATION_ERROR = "Authorization Error";
-
     public static final String AUTHORIZATION_HEADER = "Authorization";
-
     public static final String BEARER_PREFIX = "Bearer ";
-
     public static final String ACTUATOR_ENDPOINT = "/actuator/**";
     public static final String BEARER_KEY = "bearer-key";
     public static final String BEARER_JWT = "bearer-jwt";
@@ -40,12 +36,5 @@ public class ApplicationConstants {
     public static final String API_VERSION = "1.0";
     public static final String SERVER_URL = "/ledger/";
     public static final String SERVER_DESCRIPTION = "Your Expense Buddy";
-
-
-
-
-
-
-
-
+    
 }
