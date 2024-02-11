@@ -47,7 +47,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(ApplicationConstants.ACTUATOR_ENDPOINT)
                         .permitAll()
-                        .requestMatchers(ApplicationConstants.CHANGE_PASSWORD_ENDPOINT)
+                        .requestMatchers(ApplicationConstants.USERS_BASE_URL +
+                                ApplicationConstants.CHANGE_PASSWORD_ENDPOINT)
                         .authenticated()
                         .anyRequest()
                         .authenticated()

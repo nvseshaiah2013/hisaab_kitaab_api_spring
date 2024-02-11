@@ -1,30 +1,19 @@
 package com.kitaab.hisaab.ledger.service;
 
+import com.kitaab.hisaab.ledger.dto.response.SuccessResponse;
 
-import com.kitaab.hisaab.ledger.entity.user.User;
-import com.kitaab.hisaab.ledger.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
+public interface UserService {
 
-import java.util.List;
+    SuccessResponse login(String username, String password);
 
-@Service
-@AllArgsConstructor
-public class UserService {
-    private UserRepository userRepository;
+    SuccessResponse signup(String name, String username, String password);
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
+    SuccessResponse changePassword(String oldPassword, String newPassword);
 
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
+    SuccessResponse requestForgotPassword(String username);
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
+    SuccessResponse forgotPassword(String authToken, String newPassword);
 
-
+    SuccessResponse getUsers(String usernamePrefix);
 
 }
