@@ -23,7 +23,7 @@ public class LoginUserServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("Fetching details for username : {}", username);
         return Optional
-                .ofNullable(userRepository.findByEmail(username))
+                .ofNullable(userRepository.findByUsername(username))
                 .map(user -> new User(user.getUsername(), user.getPassword(), new ArrayList<>()))
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
