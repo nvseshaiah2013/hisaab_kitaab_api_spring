@@ -11,4 +11,6 @@ public class CustomConfigConstants {
     public static final String MONGO_DB_URL_SECRET = "mongo_db_secret";
 
     public static final String OCI_REGION="region";
+
+    public static final String JWT_SIGNING_KEY = "jwt_sign_key";
 }

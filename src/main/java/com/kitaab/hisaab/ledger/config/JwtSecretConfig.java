@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.JWT_SIGNING_KEY;
+import static com.kitaab.hisaab.ledger.constants.CustomConfigConstants.JWT_SIGNING_KEY;
 
 @Configuration
 @Slf4j
