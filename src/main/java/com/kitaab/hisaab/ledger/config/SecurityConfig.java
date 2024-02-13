@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -31,6 +34,12 @@ public class SecurityConfig {
     @Value("${allowedOrigins}")
     private List<String> allowedOrigins;
 
+    @Value("${allowedMethods}")
+    private List<String> allowedMethods;
+
+    @Value("${allowedHeaders}")
+    private List<String> allowedHeaders;
+
     @Autowired
     private JwtFilter jwtFilter;
 
@@ -40,6 +49,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception{
         return http
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(ApplicationConstants.ALLOW_USERS_ENDPOINT)
                         .permitAll()
@@ -54,8 +64,6 @@ public class SecurityConfig {
                         .authenticated()
                 )
                 .sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(cors ->
-                    cors.configurationSource(source -> getCorsConfiguration()).configure(http))
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -67,10 +75,20 @@ public class SecurityConfig {
     }
 
 
+    @Bean
     public CorsConfiguration getCorsConfiguration() {
         var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(allowedOrigins);
+        corsConfiguration.setAllowedMethods(allowedMethods);
+        corsConfiguration.setAllowedHeaders(allowedHeaders);
         return corsConfiguration;
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(CorsConfiguration corsConfiguration) {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
     }
 
     @Bean
