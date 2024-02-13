@@ -5,7 +5,6 @@ import com.kitaab.hisaab.ledger.util.VaultUtils;
 import com.oracle.bmc.ConfigFileReader;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -21,20 +20,23 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration
 @Slf4j
+
 @AutoConfigureBefore({MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 public class CustomMongoDBConnectionConfigurer {
 
-    @Autowired
-    @Qualifier("customConfig")
-    private ConfigFileReader.ConfigFile customConfig;
+    private final ConfigFileReader.ConfigFile customConfig;
 
-    @Autowired
-    @Qualifier("secretsConfig")
-    private ConfigFileReader.ConfigFile secretsConfig;
+    private final ConfigFileReader.ConfigFile secretsConfig;
 
-    @Autowired
-    @Qualifier("ociVaultProvider")
-    private AuthenticationDetailsProvider provider;
+    private final AuthenticationDetailsProvider provider;
+
+    public CustomMongoDBConnectionConfigurer(@Qualifier("customConfig") ConfigFileReader.ConfigFile customConfig,
+                                             @Qualifier("secretsConfig") ConfigFileReader.ConfigFile secretsConfig,
+                                             @Qualifier("ociVaultProvider") AuthenticationDetailsProvider provider) {
+        this.customConfig = customConfig;
+        this.secretsConfig = secretsConfig;
+        this.provider = provider;
+    }
 
     @Bean
     @Primary
