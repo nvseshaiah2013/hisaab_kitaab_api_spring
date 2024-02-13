@@ -49,7 +49,7 @@ public class UserController {
                 signupRequest.name(), signupRequest.username());
         Response response = userService
                 .signup(signupRequest.name(), signupRequest.username(), signupRequest.password());
-        if (response instanceof SuccessResponse) {
+        if (response.getStatus()) {
             log.info("User Created with Username: {}", signupRequest.username());
             return ResponseEntity.ok(response);
         } else {

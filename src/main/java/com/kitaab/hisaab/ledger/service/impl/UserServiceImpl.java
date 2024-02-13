@@ -1,23 +1,24 @@
 package com.kitaab.hisaab.ledger.service.impl;
 
+import com.kitaab.hisaab.ledger.constants.ExceptionEnum;
 import com.kitaab.hisaab.ledger.dto.response.ErrorMessage;
 import com.kitaab.hisaab.ledger.dto.response.Response;
 import com.kitaab.hisaab.ledger.dto.response.SuccessResponse;
 import com.kitaab.hisaab.ledger.entity.user.User;
+import com.kitaab.hisaab.ledger.exception.FlowBreakerException;
 import com.kitaab.hisaab.ledger.repository.UserRepository;
 import com.kitaab.hisaab.ledger.service.JwtService;
 import com.kitaab.hisaab.ledger.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Example;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpResponse;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +71,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SuccessResponse changePassword(String oldPassword, String newPassword) {
-        return null;
+        var userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Trying to change the password for the user : {}", userDetails.getUsername());
+        return Optional.ofNullable(userRepository.findByUsername(userDetails.getUsername()))
+                .map(user -> {
+                    if (encoder.matches(oldPassword, user.getPassword())) {
+                        user.setPassword(encoder.encode(newPassword));
+                        userRepository.save(user);
+                        return new SuccessResponse(true, "Changed Password", user);
+                    } else {
+                        log.error(ExceptionEnum.CHANGE_PASSWORD_EXCEPTION.getMessage());
+                        throw new FlowBreakerException(ExceptionEnum.CHANGE_PASSWORD_EXCEPTION.getErrorCode(),
+                                ExceptionEnum.CHANGE_PASSWORD_EXCEPTION.getMessage());
+                    }
+                })
+                .orElseThrow(() -> new IllegalStateException(ExceptionEnum.UNEXPECTED_EXCEPTION.getMessage()));
     }
 
     @Override
