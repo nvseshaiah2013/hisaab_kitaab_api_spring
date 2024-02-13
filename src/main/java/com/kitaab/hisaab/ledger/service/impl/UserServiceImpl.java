@@ -1,5 +1,7 @@
 package com.kitaab.hisaab.ledger.service.impl;
 
+import com.kitaab.hisaab.ledger.dto.response.ErrorMessage;
+import com.kitaab.hisaab.ledger.dto.response.Response;
 import com.kitaab.hisaab.ledger.dto.response.SuccessResponse;
 import com.kitaab.hisaab.ledger.entity.user.User;
 import com.kitaab.hisaab.ledger.repository.UserRepository;
@@ -7,14 +9,20 @@ import com.kitaab.hisaab.ledger.service.JwtService;
 import com.kitaab.hisaab.ledger.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Example;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpResponse;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
+
+import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.DUPLICATE_USER_ERROR;
 
 @Service
 @Slf4j
@@ -27,6 +35,8 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
 
+    private PasswordEncoder encoder;
+
     @Override
     public SuccessResponse login(String username, String password) {
         var authentication = Optional
@@ -38,8 +48,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SuccessResponse signup(String name, String username, String password) {
-        return null;
+    public Response signup(String name, String username, String password) {
+        log.debug("Trying to signup user with username: {}", username);
+        if (userRepository.existsByUsername(username)) {
+            log.error("User with Username: {} already Exist in Database", username);
+            return new ErrorMessage(DUPLICATE_USER_ERROR,
+                    MessageFormat.format("User Already Exist With Username {0}", username));
+        }
+
+        User newUser = User.builder()
+                .withName(name)
+                .withUsername(username)
+                .withPassword(encoder.encode(password))
+                .build();
+
+        newUser = userRepository.save(newUser);
+        log.info("User SignUp Successful for Username: {}", username);
+        return new SuccessResponse(true,
+                MessageFormat.format("New User Created with Username: {0}",username), newUser);
     }
 
     @Override

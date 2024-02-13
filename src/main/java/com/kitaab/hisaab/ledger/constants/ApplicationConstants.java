@@ -18,6 +18,7 @@ public class ApplicationConstants {
     };
 
     public static final String AUTHORIZATION_ERROR = "Authorization Error";
+    public static final String DUPLICATE_USER_ERROR = "Duplicate User Error";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String ACTUATOR_ENDPOINT = "/actuator/**";
@@ -43,7 +44,7 @@ public class ApplicationConstants {
 
     public static final String LOGIN_ENDPOINT = "/login";
 
-    public static final String SIGN_UP_ENDPOINT = "signup";
+    public static final String SIGN_UP_ENDPOINT = "/signup";
 
     public static final String CHANGE_PASSWORD_ENDPOINT = "/changePassword";
 

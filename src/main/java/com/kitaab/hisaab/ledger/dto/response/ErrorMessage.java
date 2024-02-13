@@ -1,3 +1,3 @@
 package com.kitaab.hisaab.ledger.dto.response;
 
-public record ErrorMessage (String header, String message) { }
+public record ErrorMessage (String header, String message) implements  Response  { }
