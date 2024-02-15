@@ -7,9 +7,12 @@ import lombok.Data;
 @Data
 @Builder(setterPrefix = "with")
 @AllArgsConstructor
-public class Email {
-    private String from ;
+public class EmailDetails {
+    private String action;
     private String to;
     private String subject;
     private String template;
+    private String token;
+    private String name;
+    private String baseUrl;
 }

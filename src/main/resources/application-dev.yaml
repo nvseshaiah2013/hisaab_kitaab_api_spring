@@ -1,1 +1,3 @@
 allowedOrigins: http://localhost:3000
+application:
+  base-url: https://localhost:3000

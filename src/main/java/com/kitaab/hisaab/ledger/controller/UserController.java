@@ -2,7 +2,7 @@ package com.kitaab.hisaab.ledger.controller;
 
 import com.kitaab.hisaab.ledger.constants.ApplicationConstants;
 import com.kitaab.hisaab.ledger.dto.request.users.ChangePasswordRequest;
-import com.kitaab.hisaab.ledger.dto.request.users.ForgotPasswordRequest;
+import com.kitaab.hisaab.ledger.dto.request.users.ResetPasswordRequest;
 import com.kitaab.hisaab.ledger.dto.request.users.LoginRequest;
 import com.kitaab.hisaab.ledger.dto.request.users.SignupRequest;
 import com.kitaab.hisaab.ledger.dto.response.Response;
@@ -65,16 +65,16 @@ public class UserController {
         return ResponseEntity.ok(userService.changePassword(changePasswordRequest.oldPassword(), changePasswordRequest.newPassword()));
     }
 
-    @PostMapping(ApplicationConstants.FORGOT_PASSWORD)
-    public ResponseEntity<SuccessResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        log.info("Changing the password for user {}", forgotPasswordRequest.username());
-        return ResponseEntity.ok(userService.forgotPassword(forgotPasswordRequest.token(), forgotPasswordRequest.newPassword()));
+    @PostMapping(ApplicationConstants.RESET_PASSWORD)
+    public ResponseEntity<SuccessResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        log.info("Changing the password for user");
+        return ResponseEntity.ok(userService.resetPassword(resetPasswordRequest.token(), resetPasswordRequest.newPassword()));
     }
 
-    @GetMapping(ApplicationConstants.FORGOT_PASSWORD)
-    public ResponseEntity<SuccessResponse> requestForgotPassword(@RequestParam("username") String username) {
+    @PostMapping(ApplicationConstants.REQUEST_RESET_PASSWORD)
+    public ResponseEntity<SuccessResponse> requestResetPassword(@RequestParam String username) {
         log.info("User {} has forgotten password. Sending password change token", username);
-        return ResponseEntity.ok(userService.requestForgotPassword(username));
+        return ResponseEntity.ok(userService.requestResetPassword(username));
     }
 
 }

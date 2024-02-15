@@ -16,5 +16,10 @@ public interface JwtService {
 
     String generateToken(UserDetails userDetails);
 
+    String generateToken(String userDetails);
+
     Boolean validateToken(String token, UserDetails userDetails);
+
+    Boolean validateToken(String token, String username);
+
 }
