@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Configuration to fetch the Mongo Connection url from vault
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration
 @Slf4j
+@Profile("!dev")
 @AutoConfigureBefore({MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 public class CustomMongoDBConnectionConfigurer {
 
