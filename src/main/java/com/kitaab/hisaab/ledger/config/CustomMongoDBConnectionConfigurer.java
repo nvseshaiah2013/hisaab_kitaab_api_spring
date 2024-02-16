@@ -5,6 +5,7 @@ import com.kitaab.hisaab.ledger.util.VaultUtils;
 import com.oracle.bmc.ConfigFileReader;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Configuration to fetch the Mongo Connection url from vault
@@ -20,7 +22,7 @@ import org.springframework.context.annotation.Primary;
  */
 @Configuration
 @Slf4j
-
+@Profile("!dev")
 @AutoConfigureBefore({MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 public class CustomMongoDBConnectionConfigurer {
 

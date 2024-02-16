@@ -6,11 +6,11 @@ spring:
   application:
     name: ledger
   profiles:
-    active: dev
+    active: prod
   mail:
     host: smtp.gmail.com
-    username: no.reply.hisaab.kitaab@gmail.com
-    password: "idft oepf kjqm nzms"
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
