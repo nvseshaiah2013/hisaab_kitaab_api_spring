@@ -36,5 +36,6 @@ public class ApplicationConstants {
     public static final String API_VERSION = "1.0";
     public static final String SERVER_URL = "/ledger/";
     public static final String SERVER_DESCRIPTION = "Your Expense Buddy";
-    
+    public static final String DEFAULT_ERROR_CODE = "LEDGER-400-VE-001";
+    public static final String USERNAME_NOT_FOUND = "LEDGER-400-VE-004";
 }
