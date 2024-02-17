@@ -1,6 +1,6 @@
 package com.kitaab.hisaab.ledger.dto.response;
 
-public record SuccessResponse (boolean status, String message, Object payload) implements Response {
+public record SuccessResponse (boolean status, String message, Object data) implements Response {
     @Override
     public boolean getStatus() {
         return status;
@@ -12,7 +12,7 @@ public record SuccessResponse (boolean status, String message, Object payload) i
     }
 
     @Override
-    public Object getPayload() {
-        return payload;
+    public Object getData() {
+        return data;
     }
 }

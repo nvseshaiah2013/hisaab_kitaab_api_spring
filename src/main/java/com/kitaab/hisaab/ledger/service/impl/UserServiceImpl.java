@@ -27,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,7 +61,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadCredentialsException(username));
         var userDetails = (UserDetails) authentication.getPrincipal();
         var jwt = jwtService.generateToken(userDetails);
-        return new SuccessResponse(true, "You are authenticated!", jwt);
+        var name = userRepository.findByUsername(username);
+        var map = new HashMap<>();
+        map.put("token", jwt);
+        map.put("name", name.getName());
+        return new SuccessResponse(true, "You are authenticated!", map);
     }
 
     @Override

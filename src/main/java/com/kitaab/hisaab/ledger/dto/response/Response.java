@@ -6,5 +6,5 @@ public interface Response{
 
     String getMessage();
 
-    Object getPayload();
+    Object getData();
 }

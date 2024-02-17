@@ -12,7 +12,7 @@ public record ErrorMessage (String header, String message) implements  Response 
     }
 
     @Override
-    public Object getPayload() {
+    public Object getData() {
         return null;
     }
 }

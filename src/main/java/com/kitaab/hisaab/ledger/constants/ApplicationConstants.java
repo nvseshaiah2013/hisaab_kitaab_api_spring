@@ -45,6 +45,9 @@ public class ApplicationConstants {
     public static final String CHANGE_PASSWORD_ENDPOINT = "/changePassword";
     public static final String RESET_PASSWORD = "/resetPassword";
     public static final String REQUEST_RESET_PASSWORD = "/requestResetPassword";
+
+    public static final String BORROWS_BASE_URL = "/api/borrow";
+    public static final String BORROW_ITEMS = "/borrowItem";
     public static final String DEFAULT_ERROR_CODE = "LEDGER-400-VE-001";
     public static final String USERNAME_NOT_FOUND = "LEDGER-400-VE-004";
 }
