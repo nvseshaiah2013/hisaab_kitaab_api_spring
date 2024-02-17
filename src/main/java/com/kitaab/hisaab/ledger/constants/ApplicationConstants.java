@@ -4,6 +4,10 @@ import jakarta.ws.rs.NotSupportedException;
 
 public class ApplicationConstants {
 
+    public ApplicationConstants() {
+        throw new NotSupportedException("Cannot instantiate this class");
+    }
+
     public static final String[] ALLOW_USERS_ENDPOINT = {
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
@@ -41,7 +45,6 @@ public class ApplicationConstants {
     public static final String CHANGE_PASSWORD_ENDPOINT = "/changePassword";
     public static final String RESET_PASSWORD = "/resetPassword";
     public static final String REQUEST_RESET_PASSWORD = "/requestResetPassword";
-    public ApplicationConstants() {
-        throw new NotSupportedException("Cannot instantiate this class");
-    }
+    public static final String DEFAULT_ERROR_CODE = "LEDGER-400-VE-001";
+    public static final String USERNAME_NOT_FOUND = "LEDGER-400-VE-004";
 }
