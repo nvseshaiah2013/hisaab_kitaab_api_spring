@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Data
 @Builder(setterPrefix = "with")
-@Document(collection = "users")
+@Document(collection = "tokenMetadata")
 public class TokenMetadata {
     @Id
     private String id;
