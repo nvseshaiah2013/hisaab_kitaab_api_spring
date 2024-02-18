@@ -36,7 +36,6 @@ public class ApplicationConstants {
     public static final String SERVER_URL = "/ledger/";
     public static final String SERVER_DESCRIPTION = "Your Expense Buddy";
 
-
     public static final String BASE_URL = "/";
 
     public static final String USERS_BASE_URL = "/api/users";
@@ -48,4 +47,6 @@ public class ApplicationConstants {
     public static final String CHANGE_PASSWORD_ENDPOINT = "/changePassword";
 
     public static final String FORGOT_PASSWORD = "/forgotPassword";
+    public static final String DEFAULT_ERROR_CODE = "LEDGER-400-VE-001";
+    public static final String USERNAME_NOT_FOUND = "LEDGER-400-VE-004";
 }
