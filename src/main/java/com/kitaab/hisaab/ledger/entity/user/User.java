@@ -1,5 +1,6 @@
 package com.kitaab.hisaab.ledger.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,6 +16,7 @@ import java.util.Date;
 @Data
 @Builder(setterPrefix = "with")
 @Document(collection = "users")
+@JsonIgnoreProperties(value = {"password", "createdAt", "updatedAt"}, allowSetters = true)
 public class User {
 
     @Id

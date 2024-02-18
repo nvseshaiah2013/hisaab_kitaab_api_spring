@@ -1,9 +1,9 @@
 package com.kitaab.hisaab.ledger.service.impl;
 
+import com.kitaab.hisaab.ledger.entity.user.CustomUserDetails;
 import com.kitaab.hisaab.ledger.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +24,11 @@ public class LoginUserServiceImpl implements UserDetailsService {
         log.info("Fetching details for username : {}", username);
         return Optional
                 .ofNullable(userRepository.findByUsername(username))
-                .map(user -> new User(user.getUsername(), user.getPassword(), new ArrayList<>()))
+                .map(u -> {
+                    var user = new CustomUserDetails(u.getUsername(), u.getPassword(), new ArrayList<>());
+                    user.put("name", u.getName());
+                    return user;
+                })
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 }

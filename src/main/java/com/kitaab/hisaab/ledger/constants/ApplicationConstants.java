@@ -50,4 +50,9 @@ public class ApplicationConstants {
     public static final String BORROW_ITEMS = "/borrowItem";
     public static final String DEFAULT_ERROR_CODE = "LEDGER-400-VE-001";
     public static final String USERNAME_NOT_FOUND = "LEDGER-400-VE-004";
+    public static final String AUTHENTICATION_SUCCESS = "You are authenticated!";
+    public static final String NEW_USER_CREATION_SUCCESS = "New user created with username: {0}";
+    public static final String PASSWORD_CHANGE_SUCCESS = "Changed Password";
+    public static final String PASSWORD_RESET_MAIL_SENT = "Password reset mail sent successfully";
+    public static final String PASSWORD_RESET_SUCCESS = "Password Change Successfully for username: {0}";
 }

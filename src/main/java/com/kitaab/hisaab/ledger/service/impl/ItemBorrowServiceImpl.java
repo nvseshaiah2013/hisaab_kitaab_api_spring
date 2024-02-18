@@ -11,6 +11,7 @@ import com.kitaab.hisaab.ledger.service.BorrowService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -33,9 +34,9 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
         log.info("Fetching the items given by the user : {}", user.getUsername());
         var list = borrowRepository.findAllByBorrower(userRepository.findByUsername(user.getUsername()));
         log.info("Found {} records", list.size());
-
-        return new SuccessResponse(true, "Fetched the list of given items",
-                list);
+        var response = new SuccessResponse(HttpStatus.OK, "Fetched the list of given items");
+        response.put("borrows", list);
+        return response;
     }
 
     @Override
@@ -59,10 +60,15 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
                 .withBorowee(userRepository.findByUsername(borrow.getBorowee()))
                 .build();
         log.debug("Built the borrow Item object");
+
         return Optional.of(borrowRepository.save(borrowItem))
-                .map(savedBorrow -> new SuccessResponse(true, "Borrow Saved successfully", savedBorrow))
-                .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.UNEXPECTED_EXCEPTION.getErrorCode(),
-                ExceptionEnum.UNEXPECTED_EXCEPTION.getMessage()));
+                .map(savedBorrow -> {
+                    var response = new SuccessResponse(HttpStatus.CREATED, "Borrow Saved successfully");
+                    response.put("savedBorrow", response);
+                    return response;
+                })
+                .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.UNEXPECTED_EXCEPTION.getMessage(),
+                ExceptionEnum.UNEXPECTED_EXCEPTION));
     }
 
     @Override
