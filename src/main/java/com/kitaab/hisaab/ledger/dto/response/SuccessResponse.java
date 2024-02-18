@@ -1,18 +1,18 @@
 package com.kitaab.hisaab.ledger.dto.response;
 
-public record SuccessResponse (boolean status, String message, Object payload) implements Response {
-    @Override
-    public boolean getStatus() {
-        return status;
+import org.springframework.http.HttpStatusCode;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public record SuccessResponse (HttpStatusCode status, String message, Map<String, Object> payload) {
+
+    public SuccessResponse(HttpStatusCode status, String message) {
+        this(status, message, new HashMap<>());
     }
 
-    @Override
-    public String getMessage() {
-        return message;
-    }
-
-    @Override
-    public Object getPayload() {
-        return payload;
+    public Map<String, Object> put(String key, Object value) {
+        payload.put(key, value);
+        return this.payload;
     }
 }

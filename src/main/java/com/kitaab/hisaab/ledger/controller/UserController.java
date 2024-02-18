@@ -44,18 +44,18 @@ public class UserController {
 
 
     @PostMapping(ApplicationConstants.SIGN_UP_ENDPOINT)
-    public ResponseEntity<Response> signup(@Valid @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<SuccessResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
         log.info("User registration for user with name : {} and username : {}",
                 signupRequest.name(), signupRequest.username());
-        Response response = userService
-                .signup(signupRequest.name(), signupRequest.username(), signupRequest.password());
-        if (response.getStatus()) {
-            log.info("User Created with Username: {}", signupRequest.username());
-            return ResponseEntity.ok(response);
-        } else {
-            log.error("Unable to create User with Username: {} user already exists!", signupRequest.username());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        }
+        return ResponseEntity.ok(userService
+                .signup(signupRequest.name(), signupRequest.username(), signupRequest.password()));
+//        if (response.getStatus()) {
+//            log.info("User Created with Username: {}", signupRequest.username());
+//            return ResponseEntity.ok(response);
+//        } else {
+//            log.error("Unable to create User with Username: {} user already exists!", signupRequest.username());
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+//        }
     }
 
     @PostMapping(ApplicationConstants.CHANGE_PASSWORD_ENDPOINT)

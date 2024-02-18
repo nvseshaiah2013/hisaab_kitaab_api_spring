@@ -20,10 +20,10 @@ import java.util.Objects;
 public class CustomExceptionHandler {
 
     @Autowired
-    Tracer tracer;
+    private Tracer tracer;
 
-    String traceId;
-    String spanId;
+    private String traceId;
+    private String spanId;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handlerMethodArgumentException(MethodArgumentNotValidException ex) {
@@ -41,7 +41,7 @@ public class CustomExceptionHandler {
         spanId = Objects.requireNonNull(tracer.currentSpan()).context().spanId();
         ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ApplicationConstants.USERNAME_NOT_FOUND,
                 traceId, spanId);
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
@@ -59,5 +59,15 @@ public class CustomExceptionHandler {
         ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ApplicationConstants.DEFAULT_ERROR_CODE,
                 traceId, spanId);
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FlowBreakerException.class)
+    public ResponseEntity<ErrorResponse> handleApplicationException(Throwable ex) {
+        traceId = Objects.requireNonNull(tracer.currentSpan()).context().traceId();
+        spanId = Objects.requireNonNull(tracer.currentSpan()).context().spanId();
+        var exception = (FlowBreakerException) ex;
+        ErrorResponse message = new ErrorResponse(new Date(), exception.getMessage(), exception.getErrorCode(),
+                traceId, spanId);
+        return new ResponseEntity<>(message,exception.getStatusCode());
     }
 }
