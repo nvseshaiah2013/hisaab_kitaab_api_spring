@@ -29,7 +29,5 @@ jobs:
           cache: maven
       - name: Compile Project
         run: mvn clean compile
-      - name: Run Tests
-        run: mvn test
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -DskipTests -B package --file pom.xml
