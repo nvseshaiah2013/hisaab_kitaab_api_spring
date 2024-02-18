@@ -1,4 +1,6 @@
 package com.kitaab.hisaab.ledger.dto.response;
 
-public record SuccessResponse (boolean status, String message, Object payload) {
+import com.kitaab.hisaab.ledger.Model.Response;
+
+public record SuccessResponse (org.springframework.http.HttpStatus status, String message, Object payload) implements Response {
 }
