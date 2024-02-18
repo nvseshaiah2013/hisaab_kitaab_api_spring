@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.MongoId;
@@ -19,9 +20,9 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Borrow {
+public abstract class Borrow {
 
-    @MongoId
+    @Id
     @EqualsAndHashCode.Include
     private String id;
 
@@ -41,5 +42,5 @@ public class Borrow {
 
     private BorrowStatus status;
 
-    private String type;
+    public abstract String getType();
 }

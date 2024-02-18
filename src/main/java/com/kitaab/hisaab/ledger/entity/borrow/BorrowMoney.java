@@ -14,4 +14,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class BorrowMoney extends Borrow{
 
     private Double amount;
+
+    @Override
+    public String getType() {
+        return "Money";
+    }
 }

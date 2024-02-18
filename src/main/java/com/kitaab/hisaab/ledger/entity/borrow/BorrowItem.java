@@ -21,4 +21,8 @@ public class BorrowItem extends Borrow{
 
     private String description;
 
+    @Override
+    public String getType() {
+        return "Items";
+    }
 }

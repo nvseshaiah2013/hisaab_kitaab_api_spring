@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 public interface BorrowRepository extends MongoRepository<Borrow, String> {
 
-    List<BorrowItem> findAllByBorrower(User borrower);
+    List<BorrowItem> findAllByBorrower__id(String id);
+
+    List<BorrowItem> findAllByBorowee__id(String id);
 
 
 }
