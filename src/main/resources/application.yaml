@@ -12,3 +12,4 @@ config:
   customConfigFilePath: .oci/custom-config
 allowedMethods: OPTIONS,GET,POST,PUT,DELETE
 allowedHeaders: authorization,content-type
+debug: true

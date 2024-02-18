@@ -15,9 +15,8 @@ import java.util.Date;
 @Builder(setterPrefix = "with")
 @Document(collection = "users")
 public class User {
-    private String username;
     @Indexed(unique = true, direction = IndexDirection.DESCENDING)
-    private String email;
+    private String username;
     private String name;
     private String password;
     @CreatedDate
