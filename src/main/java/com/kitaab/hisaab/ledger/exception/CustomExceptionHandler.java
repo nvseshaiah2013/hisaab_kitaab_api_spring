@@ -64,13 +64,12 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(FlowBreakerException.class)
-    public ResponseEntity<ErrorResponse> handleApplicationException(Throwable ex) {
+    public ResponseEntity<ErrorResponse> handleApplicationException(FlowBreakerException ex) {
         traceId = Objects.requireNonNull(tracer.currentSpan()).context().traceId();
         spanId = Objects.requireNonNull(tracer.currentSpan()).context().spanId();
-        var exception = (FlowBreakerException) ex;
-        ErrorResponse message = new ErrorResponse(new Date(), exception.getMessage(), exception.getErrorCode(),
+        ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ex.getErrorCode(),
                 traceId, spanId);
-        return new ResponseEntity<>(message,exception.getStatusCode());
+        return new ResponseEntity<>(message,ex.getStatusCode());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
