@@ -15,6 +15,7 @@ public enum ExceptionEnum {
     USERNAME_NOT_FOUND("Unable to find user with username {0}", "EX-0004"),
     DUPLICATE_USER_EXCEPTION("User with Username: {} already Exist in Database", "EX-0005", HttpStatus.CONFLICT),
     PASSWORD_RESET_TOKEN_INVALID("The supplied password reset token is invalid or expired", "EX-0006", HttpStatus.UNAUTHORIZED),
+    INVALID_CREDENTIALS("The supplied credentials do not match our records", "EX-0007", HttpStatus.UNAUTHORIZED),
     UNEXPECTED_EXCEPTION("Some unexpected exception occurred", "EX-9999");
 
     private final String message;

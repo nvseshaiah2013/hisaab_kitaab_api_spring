@@ -2,12 +2,14 @@ package com.kitaab.hisaab.ledger.exception;
 
 import com.kitaab.hisaab.ledger.constants.ApplicationConstants;
 
+import com.kitaab.hisaab.ledger.constants.ExceptionEnum;
 import com.kitaab.hisaab.ledger.dto.response.ErrorResponse;
 import io.micrometer.tracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -69,5 +71,14 @@ public class CustomExceptionHandler {
         ErrorResponse message = new ErrorResponse(new Date(), exception.getMessage(), exception.getErrorCode(),
                 traceId, spanId);
         return new ResponseEntity<>(message,exception.getStatusCode());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(Throwable ex) {
+        traceId = Objects.requireNonNull(tracer.currentSpan()).context().traceId();
+        spanId = Objects.requireNonNull(tracer.currentSpan()).context().spanId();
+        ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ExceptionEnum.INVALID_CREDENTIALS.getErrorCode(),
+                traceId, spanId);
+        return new ResponseEntity<>(message,HttpStatus.UNAUTHORIZED);
     }
 }

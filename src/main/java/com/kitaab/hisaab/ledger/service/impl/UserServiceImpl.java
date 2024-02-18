@@ -64,7 +64,8 @@ public class UserServiceImpl implements UserService {
         log.info("Authenticating the user {} with supplied credentials", username);
         var authentication = Optional
                 .ofNullable(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password)))
-                .orElseThrow(() -> new BadCredentialsException(username));
+                .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.INVALID_CREDENTIALS.getMessage(),
+                        ExceptionEnum.INVALID_CREDENTIALS));
 
         log.debug("Password authentication token generated successfully for the user : {}", username);
         var userDetails = (CustomUserDetails) authentication.getPrincipal();
