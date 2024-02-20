@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService {
         var userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         users = users.stream()
                 .filter(
-                        user -> Objects.equals(user.getUsername(), userDetails.getUsername())
+                        user -> !Objects.equals(user.getUsername(), userDetails.getUsername())
                 )
                 .collect(Collectors.toList());
         // END: remove current logged user from the list
