@@ -6,9 +6,22 @@ spring:
   application:
     name: ledger
   profiles:
-    active: dev
+    active: prod
+  mail:
+    host: smtp.gmail.com
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true
+            required: true
+    port: 587
 config:
   credentialConfigFilePath: .oci/secrets-config
   customConfigFilePath: .oci/custom-config
 allowedMethods: OPTIONS,GET,POST,PUT,DELETE
 allowedHeaders: authorization,content-type
+debug: true

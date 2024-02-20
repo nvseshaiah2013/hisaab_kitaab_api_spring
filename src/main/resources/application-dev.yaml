@@ -2,3 +2,4 @@ allowedOrigins: http://localhost:3000
 application:
   jwt-key: ${JWT_SIGNING_KEY}
   mongodb-url: ${MONGO_DB_URL}
+  base-url: https://localhost:3000
