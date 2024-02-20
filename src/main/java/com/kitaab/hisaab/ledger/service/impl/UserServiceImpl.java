@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +30,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -204,6 +204,14 @@ public class UserServiceImpl implements UserService {
     public SuccessResponse getUsers(String usernamePrefix) {
         log.info("Finding all Users starting with Username : {}", usernamePrefix);
         List<User> users = userRepository.findByUsernameStartsWith(usernamePrefix);
+        //START: remove current logged user from the list
+        var userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        users = users.stream()
+                .filter(
+                        user -> !Objects.equals(user.getUsername(), userDetails.getUsername())
+                )
+                .collect(Collectors.toList());
+        // END: remove current logged user from the list
         log.info("Found {} users starting with username : {}", users.size(), usernamePrefix);
         var response = new SuccessResponse(HttpStatus.OK, MessageFormat.format("Found {0} users", users.size()));
         response.put("users", users);
