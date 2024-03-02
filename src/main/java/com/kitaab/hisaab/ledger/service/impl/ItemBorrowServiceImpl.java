@@ -85,7 +85,7 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
     @Override
     public SuccessResponse updateBorrow(String borrowId, ItemBorrowRequest borrow)  {
         log.info("Finding the borrow record with borrow id: {}", borrowId);
-        var borrowedItem = borrowRepository.findById(borrowId)
+        BorrowItem borrowedItem = (BorrowItem) borrowRepository.findById(borrowId)
                 .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.NO_BORROW_RECORD_FOUND.getFormattedMessage(borrowId),
                         ExceptionEnum.NO_BORROW_RECORD_FOUND));
         log.debug("Found the borrow with id : {}", borrowId);
@@ -94,10 +94,21 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
             throw new FlowBreakerException(ExceptionEnum.BORROW_RECORD_CANNOT_BE_UPDATED.getFormattedMessage(borrowId),
                     ExceptionEnum.BORROW_RECORD_CANNOT_BE_UPDATED);
         }
-        // TODO:: Write updating logic
-        var response = new SuccessResponse(HttpStatus.OK, "");
-        response.put("borrow", borrowedItem);
-        return response;
+        borrowedItem.setDescription(borrow.getDescription());
+        borrowedItem.setItemName(borrow.getItemName());
+        borrowedItem.setPlace(borrow.getPlace());
+        borrowedItem.setOccasion(borrow.getOccasion());
+        borrowedItem.setExpectedReturnDate(borrow.getExpectedReturnDate());
+
+        return Optional.of(borrowRepository.save(borrowedItem))
+                .map(savedBorrow -> {
+                    log.info("Borrow updated successfully");
+                    var response = new SuccessResponse(HttpStatus.OK, "Borrow updated successfully");
+                    response.put("updatedBorrow", savedBorrow);
+                    return response;
+                })
+                .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.UNEXPECTED_EXCEPTION.getMessage(),
+                        ExceptionEnum.UNEXPECTED_EXCEPTION));
     }
 
     @Override
@@ -132,6 +143,8 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
 
     @Override
     public SuccessResponse returnBorrow(String borrowId) {
+        log.info("Requested to return the borrow with id {}", borrowId);
+
         return null;
     }
 
@@ -146,7 +159,7 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
         if (!Objects.equals(borrow.getBorrower().get_id(), user.get("_id"))) {
 
             log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, "REJECT", borrow
-                    .getBorrower().getUsername() );
+                    .getBorrower().getUsername());
             throw new FlowBreakerException(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(borrowId,
                     "REJECT", borrow.getBorrower().getUsername()),
                     ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD);
