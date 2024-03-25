@@ -29,6 +29,10 @@ public enum ExceptionEnum {
             "EX-0010",HttpStatus.FORBIDDEN),
     BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION("Borrow record {0} is in inconsistent state for requested action {1}",
             "EX-0011",HttpStatus.FORBIDDEN),
+    BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND("Borrow token expired or the given token not found. Please " +
+            "try resending the token.", "EX-0012",
+            HttpStatus.UNAUTHORIZED),
+    BORROW_TOKEN_INVALID("Provided secret token is invalid. Please try again with valid secret code.", "EX-0013", HttpStatus.UNAUTHORIZED),
     UNEXPECTED_EXCEPTION("Some unexpected exception occurred", "EX-9999");
 
     private final String message;
