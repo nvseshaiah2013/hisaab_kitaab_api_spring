@@ -48,6 +48,12 @@ public class ApplicationConstants {
 
     public static final String BORROWS_BASE_URL = "/api/borrow";
     public static final String BORROW_ITEMS = "/borrowItem";
+    public static final String BORROW_ITEMS_BY_ID = BORROW_ITEMS + "/{borrowId}";
+    public static final String RETURN_BORROW_ITEM_BY_ID = BORROW_ITEMS_BY_ID + "/return";
+    public static final String TAKEN_ITEMS = "/takenItems";
+    public static final String VALIDATE_BORROW = "/validateborrow/{borrowId}";
+    public static final String VALIDATE_RETURN = "/validatereturn/{borrowId}";
+    public static final String REJECT_BORROW = "/reject/{borrowId}";
     public static final String DEFAULT_ERROR_CODE = "LEDGER-400-VE-001";
     public static final String USERNAME_NOT_FOUND = "LEDGER-400-VE-004";
     public static final String AUTHENTICATION_SUCCESS = "You are authenticated!";
@@ -55,4 +61,10 @@ public class ApplicationConstants {
     public static final String PASSWORD_CHANGE_SUCCESS = "Changed Password";
     public static final String PASSWORD_RESET_MAIL_SENT = "Password reset mail sent successfully";
     public static final String PASSWORD_RESET_SUCCESS = "Password Change Successfully for username: {0}";
+
+    public static final String REJECT_ACTION = "REJECT";
+    public static final String VALIDATE_BORROW_ACTION = "VALIDATE_BORROW";
+    public static final String VALIDATE_RETURN_ACTION = "VALIDATE_RETURN";
+    public static final String RETURN_ACTION = "RETURN";
+    public static final String DELETE_ACTION = "DELETE";
 }

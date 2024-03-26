@@ -3,6 +3,7 @@ package com.kitaab.hisaab.ledger.service.impl;
 import com.kitaab.hisaab.ledger.constants.ExceptionEnum;
 import com.kitaab.hisaab.ledger.dto.request.borrow.ItemBorrowRequest;
 import com.kitaab.hisaab.ledger.dto.response.SuccessResponse;
+import com.kitaab.hisaab.ledger.entity.borrow.Borrow;
 import com.kitaab.hisaab.ledger.entity.borrow.BorrowItem;
 import com.kitaab.hisaab.ledger.entity.borrow.BorrowStatus;
 import com.kitaab.hisaab.ledger.entity.borrow.BorrowToken;
@@ -25,6 +26,8 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.kitaab.hisaab.ledger.constants.ApplicationConstants.*;
 
 @Service
 @Qualifier("itemBorrowService")
@@ -83,6 +86,9 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
                     log.info("Borrow Saved successfully");
                     var response = new SuccessResponse(HttpStatus.CREATED, "Borrow Saved successfully");
                     response.put("savedBorrow", savedBorrow);
+                    log.info("Generating secret token for borrow: {}", savedBorrow.getId());
+                    generateToken(savedBorrow);
+                    log.debug("Secret token generated for borrow: {}", savedBorrow.getId());
                     return response;
                 })
                 .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.UNEXPECTED_EXCEPTION.getMessage(),
@@ -112,6 +118,9 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
                     log.info("Borrow updated successfully");
                     var response = new SuccessResponse(HttpStatus.OK, "Borrow updated successfully");
                     response.put("updatedBorrow", savedBorrow);
+                    log.info("Generating secret token for borrow: {}", savedBorrow.getId());
+                    generateToken(savedBorrow);
+                    log.debug("Secret token generated for borrow: {}", savedBorrow.getId());
                     return response;
                 })
                 .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.UNEXPECTED_EXCEPTION.getMessage(),
@@ -126,19 +135,18 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
                         ExceptionEnum.NO_BORROW_RECORD_FOUND));
         var user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (!Objects.equals(borrow.getBorrower().get_id(), user.get("_id"))) {
+        if (!Objects.equals(borrow.getBorrower().get_id(), user.get("_id")) && !Objects.equals(borrow.getBorowee().get_id(), user.get("_id"))) {
 
-            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, "DELETE", borrow
-                    .getBorrower().getUsername() );
+            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, DELETE_ACTION, user.get("_id"));
             throw new FlowBreakerException(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(borrowId,
-                    "DELETE", borrow.getBorrower().getUsername()),
+                    DELETE_ACTION, String.valueOf(user.get("_id"))),
                     ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD);
         }
 
         if (BorrowStatus.APPROVED == borrow.getStatus()) {
 
-            log.error(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getMessage(), borrowId, "DELETE");
-            throw new FlowBreakerException(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getFormattedMessage(borrowId, "DELETE"),
+            log.error(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getMessage(), borrowId, DELETE_ACTION);
+            throw new FlowBreakerException(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getFormattedMessage(borrowId, DELETE_ACTION),
                     ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION);
         }
 
@@ -159,29 +167,22 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
 
         if (!Objects.equals(borrow.getBorowee().get_id(), user.get("_id"))) {
 
-            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, "RETURN", borrow
+            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, RETURN_ACTION, borrow
                     .getBorowee().getUsername() );
             throw new FlowBreakerException(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(borrowId,
-                    "RETURN", borrow.getBorowee().getUsername()),
+                    RETURN_ACTION, borrow.getBorowee().getUsername()),
                     ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD);
         }
 
         if (BorrowStatus.APPROVED != borrow.getStatus()) {
 
-            log.error(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getMessage(), borrowId, "RETURN");
-            throw new FlowBreakerException(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getFormattedMessage(borrowId, "RETURN"),
+            log.error(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getMessage(), borrowId, RETURN_ACTION);
+            throw new FlowBreakerException(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getFormattedMessage(borrowId, RETURN_ACTION),
                     ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION);
         }
 
-        log.debug("Generating the secret token for borrow with id :{}", borrow.getId());
-        var secretToken = SecretTokenUtil.generateRandomToken();
-
-        log.debug("Building the token document");
-        var borrowToken = tokenRepository.save(BorrowToken.builder()
-                .validity(5L)
-                .secretToken(secretToken)
-                .borrow(borrow)
-                .build());
+        log.debug("Generating secret token for borrow: {}", borrow.getId());
+        var borrowToken = generateToken(borrow);
 
         log.debug("Saved the secret token with document id :{}", borrowToken.getId());
 
@@ -198,17 +199,17 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
 
         if (!Objects.equals(borrow.getBorrower().get_id(), user.get("_id"))) {
 
-            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, "REJECT", borrow
+            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, REJECT_ACTION, borrow
                     .getBorrower().getUsername());
             throw new FlowBreakerException(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(borrowId,
-                    "REJECT", borrow.getBorrower().getUsername()),
+                    REJECT_ACTION, borrow.getBorrower().getUsername()),
                     ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD);
         }
 
         if (BorrowStatus.PENDING != borrow.getStatus()) {
 
-            log.error(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getMessage(), borrowId, "REJECT");
-            throw new FlowBreakerException(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getFormattedMessage(borrowId, "REJECT"),
+            log.error(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getMessage(), borrowId, REJECT_ACTION);
+            throw new FlowBreakerException(ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION.getFormattedMessage(borrowId, REJECT_ACTION),
                     ExceptionEnum.BORROW_RECORD_INVALID_STATE_FOR_REQUESTED_ACTION);
         }
 
@@ -229,20 +230,21 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
 
         if (!Objects.equals(borrow.getBorrower().get_id(), user.get("_id"))) {
 
-            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, "VALIDATE_BORROW", borrow
+            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, VALIDATE_BORROW_ACTION, borrow
                     .getBorrower().getUsername());
             throw new FlowBreakerException(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(borrowId,
-                    "VALIDATE_BORROW", borrow.getBorrower().getUsername()),
+                    VALIDATE_BORROW_ACTION, borrow.getBorrower().getUsername()),
                     ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD);
         }
 
+        log.debug("Fetching the secret tokens for the borrow: {}", borrowId);
         var tokens = tokenRepository
-                .findAllByBorrowId(borrowId)
+                .findAllByBorrow_id(borrowId)
                 .stream()
                 .sorted(Comparator.comparing(BorrowToken::getCreatedDate).reversed()).toList();
+        var localDate = LocalDateTime.now();
 
-
-        if (tokens.isEmpty() || tokens.get(0).getCreatedDate().plusMinutes(tokens.get(0).getValidity()).isAfter(LocalDateTime.now())) {
+        if (tokens.isEmpty() || localDate.isAfter(tokens.get(0).getCreatedDate().plusMinutes(tokens.get(0).getValidity()))) {
             log.error(ExceptionEnum.BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND.getMessage());
             tokenRepository.deleteAll(tokens);
             throw new FlowBreakerException(ExceptionEnum.BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND.getErrorCode(),
@@ -254,8 +256,11 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
             throw new FlowBreakerException(ExceptionEnum.BORROW_TOKEN_INVALID.getMessage(), ExceptionEnum.BORROW_TOKEN_INVALID);
         }
 
+        log.debug("Secret code is valid. Setting the borrow: {} to APPROVED state", borrowId);
         borrow.setStatus(BorrowStatus.APPROVED);
         borrowRepository.save(borrow);
+
+        log.debug("Deleting the secret token: {}", tokens.get(0).getId());
         tokenRepository.delete(tokens.get(0));
         return new SuccessResponse(HttpStatus.OK, "Borrow validated successfully.");
     }
@@ -270,20 +275,21 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
 
         if (!Objects.equals(borrow.getBorowee().get_id(), user.get("_id"))) {
 
-            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, "VALIDATE_RETURN", borrow
+            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(), borrowId, VALIDATE_RETURN_ACTION, borrow
                     .getBorowee().getUsername());
             throw new FlowBreakerException(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(borrowId,
-                    "VALIDATE_RETURN", borrow.getBorowee().getUsername()),
+                    VALIDATE_RETURN_ACTION, borrow.getBorowee().getUsername()),
                     ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD);
         }
 
+        log.debug("Fetching the secret tokens for the borrow: {}", borrowId);
         var tokens = tokenRepository
-                .findAllByBorrowId(borrowId)
+                .findAllByBorrow_id(borrowId)
                 .stream()
                 .sorted(Comparator.comparing(BorrowToken::getCreatedDate).reversed()).toList();
+        var localDate = LocalDateTime.now();
 
-
-        if (tokens.isEmpty() || tokens.get(0).getCreatedDate().plusMinutes(tokens.get(0).getValidity()).isAfter(LocalDateTime.now())) {
+        if (tokens.isEmpty() || localDate.isAfter(tokens.get(0).getCreatedDate().plusMinutes(tokens.get(0).getValidity()))) {
             log.error(ExceptionEnum.BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND.getMessage());
             tokenRepository.deleteAll(tokens);
             throw new FlowBreakerException(ExceptionEnum.BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND.getErrorCode(),
@@ -295,9 +301,24 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
             throw new FlowBreakerException(ExceptionEnum.BORROW_TOKEN_INVALID.getMessage(), ExceptionEnum.BORROW_TOKEN_INVALID);
         }
 
+        log.debug("Secret code is valid. Setting the borrow: {} to RETURNED state", borrowId);
         borrow.setStatus(BorrowStatus.RETURNED);
         borrowRepository.save(borrow);
+
+        log.debug("Deleting the secret token: {}", tokens.get(0).getId());
         tokenRepository.delete(tokens.get(0));
         return new SuccessResponse(HttpStatus.OK, "Borrow returned successfully.");
+    }
+
+    private BorrowToken generateToken(Borrow borrow) {
+        log.debug("Generating the secret token for borrow with id :{}", borrow.getId());
+        var secretToken = SecretTokenUtil.generateRandomToken();
+
+        log.debug("Building the token document");
+        return tokenRepository.save(BorrowToken.builder()
+                .validity(5L)
+                .secretToken(secretToken)
+                .borrow(borrow)
+                .build());
     }
 }

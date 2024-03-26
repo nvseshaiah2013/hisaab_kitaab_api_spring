@@ -5,7 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class SecretTokenUtil {
 
-    private static final Integer TOKEN_LENGTH = 6;
+    private static final Integer TOKEN_LENGTH = 9;
 
     private static final Boolean USE_LETTERS = true;
 

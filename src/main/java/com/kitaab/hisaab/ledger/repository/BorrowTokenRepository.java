@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface BorrowTokenRepository extends MongoRepository<BorrowToken, String> {
 
-    List<BorrowToken> findAllByBorrowId(String borrowId);
+    List<BorrowToken> findAllByBorrow_id(String borrowId);
 }
