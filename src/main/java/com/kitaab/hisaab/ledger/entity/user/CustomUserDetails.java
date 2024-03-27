@@ -35,9 +35,9 @@ public class CustomUserDetails extends User {
      * @param value value of the metadata
      * @return returns the current metadata map.
      */
-    public Map<String, Object> put(String key, Object value) {
+    public CustomUserDetails put(String key, Object value) {
         metadata.put(key, value);
-        return this.metadata;
+        return this;
     }
 
     /**

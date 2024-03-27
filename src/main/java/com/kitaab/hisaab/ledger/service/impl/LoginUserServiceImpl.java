@@ -26,7 +26,9 @@ public class LoginUserServiceImpl implements UserDetailsService {
                 .ofNullable(userRepository.findByUsername(username))
                 .map(u -> {
                     var user = new CustomUserDetails(u.getUsername(), u.getPassword(), new ArrayList<>());
-                    user.put("name", u.getName());
+                    user.put("name", u.getName())
+                            .put("user", u)
+                            .put("_id", u.get_id());
                     return user;
                 })
                 .orElseThrow(() -> new UsernameNotFoundException(username));
