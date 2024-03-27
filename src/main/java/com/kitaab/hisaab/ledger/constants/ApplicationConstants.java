@@ -17,8 +17,6 @@ public class ApplicationConstants {
             // other public endpoints of your API may be appended to this array
     };
     public static final String AUTHORIZATION_ERROR = "Authorization Error";
-    public static final String DUPLICATE_USER_ERROR = "Duplicate User Error";
-    public static final String NO_SUCH_USER = "No Such User";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String ACTUATOR_ENDPOINT = "/actuator/**";
@@ -68,6 +66,6 @@ public class ApplicationConstants {
     public static final String VALIDATE_RETURN_ACTION = "VALIDATE_RETURN";
     public static final String RETURN_ACTION = "RETURN";
     public static final String DELETE_ACTION = "DELETE";
-    public static final String GET_TOKEN = "{borrowId}/getToken";
-    public static final String GENERATE_TOKEN = "{borrowId}/generateToken";
+    public static final String UPDATE_ACTION = "UPDATE_ACTION";
+    public static final String BORROW_ID = "/{borrowId}";
 }

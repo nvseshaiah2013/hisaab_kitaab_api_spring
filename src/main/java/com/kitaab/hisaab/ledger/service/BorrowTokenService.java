@@ -5,7 +5,10 @@ import com.kitaab.hisaab.ledger.entity.borrow.Borrow;
 import com.kitaab.hisaab.ledger.entity.borrow.BorrowToken;
 
 public interface BorrowTokenService {
+
     SuccessResponse generateTokenResponse(String borrowId);
+
     SuccessResponse getToken(String borrowId);
+
     BorrowToken generateToken(Borrow borrow);
 }
