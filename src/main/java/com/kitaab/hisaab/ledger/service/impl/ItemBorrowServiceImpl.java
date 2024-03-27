@@ -14,6 +14,7 @@ import com.kitaab.hisaab.ledger.repository.BorrowRepository;
 import com.kitaab.hisaab.ledger.repository.BorrowTokenRepository;
 import com.kitaab.hisaab.ledger.repository.UserRepository;
 import com.kitaab.hisaab.ledger.service.BorrowService;
+import com.kitaab.hisaab.ledger.service.BorrowTokenService;
 import com.kitaab.hisaab.ledger.util.SecretTokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,8 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
     private final UserRepository userRepository;
 
     private final BorrowTokenRepository tokenRepository;
+
+    private final BorrowTokenService tokenService;
 
     @Override
     public SuccessResponse getGivenBorrows() {
@@ -87,7 +90,7 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
                     var response = new SuccessResponse(HttpStatus.CREATED, "Borrow Saved successfully");
                     response.put("savedBorrow", savedBorrow);
                     log.info("Generating secret token for borrow: {}", savedBorrow.getId());
-                    generateToken(savedBorrow);
+                    tokenService.generateToken(savedBorrow);
                     log.debug("Secret token generated for borrow: {}", savedBorrow.getId());
                     return response;
                 })
@@ -119,7 +122,7 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
                     var response = new SuccessResponse(HttpStatus.OK, "Borrow updated successfully");
                     response.put("updatedBorrow", savedBorrow);
                     log.info("Generating secret token for borrow: {}", savedBorrow.getId());
-                    generateToken(savedBorrow);
+                    tokenService.generateToken(savedBorrow);
                     log.debug("Secret token generated for borrow: {}", savedBorrow.getId());
                     return response;
                 })
@@ -182,7 +185,7 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
         }
 
         log.debug("Generating secret token for borrow: {}", borrow.getId());
-        var borrowToken = generateToken(borrow);
+        var borrowToken = tokenService.generateToken(borrow);
 
         log.debug("Saved the secret token with document id :{}", borrowToken.getId());
 
@@ -310,15 +313,5 @@ public class ItemBorrowServiceImpl implements BorrowService<ItemBorrowRequest> {
         return new SuccessResponse(HttpStatus.OK, "Borrow returned successfully.");
     }
 
-    private BorrowToken generateToken(Borrow borrow) {
-        log.debug("Generating the secret token for borrow with id :{}", borrow.getId());
-        var secretToken = SecretTokenUtil.generateRandomToken();
 
-        log.debug("Building the token document");
-        return tokenRepository.save(BorrowToken.builder()
-                .validity(5L)
-                .secretToken(secretToken)
-                .borrow(borrow)
-                .build());
-    }
 }

@@ -40,6 +40,7 @@ public class ApplicationConstants {
     public static final String SERVER_DESCRIPTION = "Your Expense Buddy";
     public static final String BASE_URL = "/";
     public static final String USERS_BASE_URL = "/api/users";
+    public static final String TOKEN_BASE_URL = "/api/token";
     public static final String LOGIN_ENDPOINT = "/login";
     public static final String SIGN_UP_ENDPOINT = "/signup";
     public static final String CHANGE_PASSWORD_ENDPOINT = "/changePassword";
@@ -67,4 +68,6 @@ public class ApplicationConstants {
     public static final String VALIDATE_RETURN_ACTION = "VALIDATE_RETURN";
     public static final String RETURN_ACTION = "RETURN";
     public static final String DELETE_ACTION = "DELETE";
+    public static final String GET_TOKEN = "{borrowId}/getToken";
+    public static final String GENERATE_TOKEN = "{borrowId}/generateToken";
 }
