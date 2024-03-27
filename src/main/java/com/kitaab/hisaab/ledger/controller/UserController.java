@@ -2,7 +2,6 @@ package com.kitaab.hisaab.ledger.controller;
 
 import com.kitaab.hisaab.ledger.constants.ApplicationConstants;
 import com.kitaab.hisaab.ledger.dto.request.users.ChangePasswordRequest;
-import com.kitaab.hisaab.ledger.dto.request.users.ForgotPasswordRequest;
 import com.kitaab.hisaab.ledger.dto.request.users.ResetPasswordRequest;
 import com.kitaab.hisaab.ledger.dto.request.users.LoginRequest;
 import com.kitaab.hisaab.ledger.dto.request.users.SignupRequest;
@@ -44,8 +43,10 @@ public class UserController {
 
     @PostMapping(ApplicationConstants.SIGN_UP_ENDPOINT)
     public ResponseEntity<SuccessResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
-        log.info("User registration for user with name : {} and username : {}", signupRequest.name(), signupRequest.username());
-        return ResponseEntity.ok(userService.signup(signupRequest.name(), signupRequest.username(), signupRequest.password()));
+        log.info("User registration for user with name : {} and username : {}",
+                signupRequest.name(), signupRequest.username());
+        return ResponseEntity.ok(userService
+                .signup(signupRequest.name(), signupRequest.username(), signupRequest.password()));
     }
 
     @PostMapping(ApplicationConstants.CHANGE_PASSWORD_ENDPOINT)
@@ -65,6 +66,6 @@ public class UserController {
     public ResponseEntity<SuccessResponse> requestResetPassword(@RequestParam String username) {
         log.info("User {} has forgotten password. Sending password change token", username);
         return ResponseEntity.ok(userService.requestResetPassword(username));
-
     }
+
 }
