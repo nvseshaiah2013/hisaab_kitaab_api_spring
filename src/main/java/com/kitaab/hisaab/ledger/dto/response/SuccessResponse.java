@@ -1,6 +1,18 @@
 package com.kitaab.hisaab.ledger.dto.response;
 
-import com.kitaab.hisaab.ledger.Model.Response;
+import org.springframework.http.HttpStatusCode;
 
-public record SuccessResponse (org.springframework.http.HttpStatus status, String message, Object payload) implements Response {
+import java.util.HashMap;
+import java.util.Map;
+
+public record SuccessResponse (HttpStatusCode status, String message, Map<String, Object> payload) {
+
+    public SuccessResponse(HttpStatusCode status, String message) {
+        this(status, message, new HashMap<>());
+    }
+
+    public Map<String, Object> put(String key, Object value) {
+        payload.put(key, value);
+        return this.payload;
+    }
 }

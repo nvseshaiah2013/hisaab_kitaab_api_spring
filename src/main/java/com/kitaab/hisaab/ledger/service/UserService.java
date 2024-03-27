@@ -10,9 +10,9 @@ public interface UserService {
 
     SuccessResponse changePassword(String oldPassword, String newPassword);
 
-    SuccessResponse requestForgotPassword(String username);
+    SuccessResponse requestResetPassword(String username);
 
-    SuccessResponse forgotPassword(String authToken, String newPassword);
+    SuccessResponse resetPassword(String authToken, String newPassword);
 
     SuccessResponse getUsers(String usernamePrefix);
 

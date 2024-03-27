@@ -1,1 +1,3 @@
 allowedOrigins: https://hisabkitab.rahulojha.in
+application:
+  base-url: https://hiasabkitab.rahulojha.in

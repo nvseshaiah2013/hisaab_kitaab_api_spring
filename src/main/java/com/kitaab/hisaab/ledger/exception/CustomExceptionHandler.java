@@ -2,12 +2,14 @@ package com.kitaab.hisaab.ledger.exception;
 
 import com.kitaab.hisaab.ledger.constants.ApplicationConstants;
 
+import com.kitaab.hisaab.ledger.constants.ExceptionEnum;
 import com.kitaab.hisaab.ledger.dto.response.ErrorResponse;
 import io.micrometer.tracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,10 +22,10 @@ import java.util.Objects;
 public class CustomExceptionHandler {
 
     @Autowired
-    Tracer tracer;
+    private Tracer tracer;
 
-    String traceId;
-    String spanId;
+    private String traceId;
+    private String spanId;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handlerMethodArgumentException(MethodArgumentNotValidException ex) {
@@ -41,7 +43,7 @@ public class CustomExceptionHandler {
         spanId = Objects.requireNonNull(tracer.currentSpan()).context().spanId();
         ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ApplicationConstants.USERNAME_NOT_FOUND,
                 traceId, spanId);
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
@@ -59,5 +61,23 @@ public class CustomExceptionHandler {
         ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ApplicationConstants.DEFAULT_ERROR_CODE,
                 traceId, spanId);
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FlowBreakerException.class)
+    public ResponseEntity<ErrorResponse> handleApplicationException(FlowBreakerException ex) {
+        traceId = Objects.requireNonNull(tracer.currentSpan()).context().traceId();
+        spanId = Objects.requireNonNull(tracer.currentSpan()).context().spanId();
+        ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ex.getErrorCode(),
+                traceId, spanId);
+        return new ResponseEntity<>(message,ex.getStatusCode());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(Throwable ex) {
+        traceId = Objects.requireNonNull(tracer.currentSpan()).context().traceId();
+        spanId = Objects.requireNonNull(tracer.currentSpan()).context().spanId();
+        ErrorResponse message = new ErrorResponse(new Date(), ex.getMessage(), ExceptionEnum.INVALID_CREDENTIALS.getErrorCode(),
+                traceId, spanId);
+        return new ResponseEntity<>(message,HttpStatus.UNAUTHORIZED);
     }
 }

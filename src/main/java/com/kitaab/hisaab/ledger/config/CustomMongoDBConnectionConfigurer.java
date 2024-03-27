@@ -26,17 +26,19 @@ import org.springframework.context.annotation.Profile;
 @AutoConfigureBefore({MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 public class CustomMongoDBConnectionConfigurer {
 
-    @Autowired
-    @Qualifier("customConfig")
-    private ConfigFileReader.ConfigFile customConfig;
+    private final ConfigFileReader.ConfigFile customConfig;
 
-    @Autowired
-    @Qualifier("secretsConfig")
-    private ConfigFileReader.ConfigFile secretsConfig;
+    private final ConfigFileReader.ConfigFile secretsConfig;
 
-    @Autowired
-    @Qualifier("ociVaultProvider")
-    private AuthenticationDetailsProvider provider;
+    private final AuthenticationDetailsProvider provider;
+
+    public CustomMongoDBConnectionConfigurer(@Qualifier("customConfig") ConfigFileReader.ConfigFile customConfig,
+                                             @Qualifier("secretsConfig") ConfigFileReader.ConfigFile secretsConfig,
+                                             @Qualifier("ociVaultProvider") AuthenticationDetailsProvider provider) {
+        this.customConfig = customConfig;
+        this.secretsConfig = secretsConfig;
+        this.provider = provider;
+    }
 
     @Bean
     @Primary

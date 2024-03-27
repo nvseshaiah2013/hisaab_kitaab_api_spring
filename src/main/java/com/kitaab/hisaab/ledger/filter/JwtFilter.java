@@ -1,6 +1,7 @@
 package com.kitaab.hisaab.ledger.filter;
 
 import com.kitaab.hisaab.ledger.dto.response.ErrorMessage;
+import com.kitaab.hisaab.ledger.entity.user.CustomUserDetails;
 import com.kitaab.hisaab.ledger.service.JwtService;
 import com.kitaab.hisaab.ledger.service.impl.LoginUserServiceImpl;
 import io.jsonwebtoken.JwtException;
@@ -45,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userService.loadUserByUsername(username);
+                CustomUserDetails userDetails = (CustomUserDetails) this.userService.loadUserByUsername(username);
                 if (jwtService.validateToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                             = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
