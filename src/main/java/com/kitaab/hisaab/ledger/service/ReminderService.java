@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ReminderService {
 
-    Page<Reminder> showSentReminders(String userId, int pageNumber, int pageSize);
+    Page<Reminder> showSentReminders(int pageNumber, int pageSize);
 
     SuccessResponse sendReminder(SendReminderRequest reminderRequest);
 

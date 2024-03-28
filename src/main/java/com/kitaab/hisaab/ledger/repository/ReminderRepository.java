@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReminderRepository extends MongoRepository<Reminder, String> {
 
-    Page<Reminder> findAllByBorrowerId(String userId, PageRequest pageRequest);
+    Page<Reminder> findAllByBorrow_borrower__id(String userId, PageRequest pageRequest);
+
+    Page<Reminder> findAllByBorrow_borowee__id(String userId, PageRequest pageRequest);
 }
