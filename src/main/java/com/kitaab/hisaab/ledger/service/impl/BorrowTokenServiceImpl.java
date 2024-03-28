@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,8 @@ public class BorrowTokenServiceImpl implements BorrowTokenService {
         Borrow borrow = validateBorrowAndGet(borrowId);
 
         BorrowToken token = generateToken(borrow);
-        return new SuccessResponse(HttpStatus.OK, MessageFormat.format("New Secret Token generated for borrowId: {0}", borrowId), Map.of("secretToken", token));
+        return new SuccessResponse(HttpStatus.OK, MessageFormat.format("New Secret Token generated for borrowId: {0}",
+                borrowId), Map.of("code", 201));
     }
 
     /**
@@ -50,24 +50,21 @@ public class BorrowTokenServiceImpl implements BorrowTokenService {
     @Override
     public SuccessResponse getToken(String borrowId) {
 
-        Borrow borrow = validateBorrowAndGet(borrowId);
+        validateBorrowAndGet(borrowId);
         log.debug("Finding the secret tokens for the borrow: {}", borrowId);
         List<BorrowToken> tokens = tokenRepository
                 .findAllByBorrow_id(borrowId)
                 .stream()
                 .sorted(Comparator.comparing(BorrowToken::getCreatedDate).reversed()).toList();
 
-        LocalDateTime now = LocalDateTime.now();
-
-        if (tokens.isEmpty() || now.isAfter(tokens.get(0).getCreatedDate().plusMinutes(tokens.get(0).getValidity()))) {
+        if (tokens.isEmpty()) {
             log.error(ExceptionEnum.BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND.getMessage());
-            tokenRepository.deleteAll(tokens);
             throw new FlowBreakerException(ExceptionEnum.BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND.getErrorCode(),
                     ExceptionEnum.BORROW_TOKEN_EXPIRED_OR_TOKEN_NOT_FOUND);
         }
 
         return new SuccessResponse(HttpStatus.OK, MessageFormat.format("Secret Token found for borrowId: {0}",borrowId),
-                Map.of("secretToken", tokens.get(0)));
+                Map.of("token", tokens.get(0).getSecretToken()));
     }
 
     /**
@@ -92,8 +89,8 @@ public class BorrowTokenServiceImpl implements BorrowTokenService {
                 .orElseThrow(() -> new FlowBreakerException(ExceptionEnum.NO_BORROW_RECORD_FOUND.getFormattedMessage(borrowId),
                         ExceptionEnum.NO_BORROW_RECORD_FOUND));
         CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!Objects.equals(borrow.getBorrower().get_id(), user.get("_id"))) {
-            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getMessage(),
+        if (!Objects.equals(borrow.getBorrower().get_id(), user.get("_id")) && !Objects.equals(borrow.getBorowee().get_id(), user.get("_id"))) {
+            log.error(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(),
                     borrowId, VALIDATE_BORROW_ACTION, borrow.getBorrower().getUsername());
             throw new FlowBreakerException(ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD.getFormattedMessage(borrowId,
                     VALIDATE_BORROW_ACTION, borrow.getBorrower().getUsername()), ExceptionEnum.USER_CANNOT_PERFORM_THE_ACTION_ON_THIS_BORROW_RECORD);
